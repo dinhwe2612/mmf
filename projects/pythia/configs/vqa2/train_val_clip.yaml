@@ -1,0 +1,44 @@
+includes:
+- ./defaults.yaml
+
+dataset_config:
+  vqa2:
+    use_images: false
+    use_features: true
+    features:
+      train:
+      - /kaggle/input/clip-vil-vqa2-features/train2014.lmdb
+      val:
+      - /kaggle/input/clip-vil-vqa2-features/val2014.lmdb
+      test:
+      - /kaggle/input/clip-vil-vqa2-features/test2015.lmdb
+    annotations:
+      train:
+      - /kaggle/input/vqa2-annotations/imdb_train2014.npy
+      - /kaggle/input/vqa2-annotations/imdb_val2014.npy
+      val:
+      - /kaggle/input/vqa2-annotations/imdb_val2014.npy
+
+model_config:
+  pythia:
+    image_feature_dim: 512
+    image_feature_encodings:
+    - type: default
+      params:
+        model_data_dir: ${model_config.pythia.model_data_dir}
+    image_feature_embeddings:
+    - modal_combine:
+        type: non_linear_element_multiply
+        params:
+          dropout: 0
+          hidden_dim: 5000
+      normalization: softmax
+      transform:
+        type: linear
+        params:
+          out_dim: 1
+
+training:
+  batch_size: 256
+  max_updates: 30000
+
